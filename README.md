@@ -14,3 +14,23 @@ git clone https://github.com/gcruz-UZ/TMDAD_2024.git
 ```
 
 Y abre el proyecto con IntelliJ. Cuando haya terminado de descargar las dependencias, puedes ejecutar la aplicación.
+
+## Sentencias SQL para ElephantSQL
+
+Crear tabla de usuarios:
+
+```
+CREATE TABLE chat_user (
+id INT PRIMARY KEY,
+login VARCHAR(50) UNIQUE,
+name VARCHAR(100),
+is_superuser BOOLEAN
+);
+```
+
+Insertar usuario:
+
+```
+INSERT INTO chat_user VALUES
+    (1, 'gcruz', 'Guillermo Cruz', TRUE);
+```
