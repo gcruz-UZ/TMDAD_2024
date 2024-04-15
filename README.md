@@ -69,3 +69,15 @@ Insertar relaciones usuario-grupo:
 INSERT INTO user_room VALUES
     (1, 1);
 ```
+
+## Notas clase
+
+Documentacion para conectar nuestra aplicacion con el broker RabbitMQ: investigar en este enlace
+
+```
+https://docs.spring.io/spring-framework/docs/4.3.x/spring-framework-reference/html/websocket.html
+```
+
+La imagen es:
+
+![title](img_readme/img_broker.png)
