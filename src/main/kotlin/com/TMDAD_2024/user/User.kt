@@ -1,5 +1,7 @@
 package com.TMDAD_2024.user
 
+import com.TMDAD_2024.room.Room
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 
 @Entity
@@ -10,5 +12,13 @@ data class User (
     var id: Int,
     var login: String,
     var name: String,
-    var isSuperuser: Boolean = false
+    var isSuperuser: Boolean = false,
+    @JsonManagedReference
+    @ManyToMany
+    @JoinTable(
+        name = "user_room",
+        joinColumns = arrayOf(JoinColumn(name = "user_id")),
+        inverseJoinColumns = arrayOf(JoinColumn(name = "room_id"))
+    )
+    val rooms: List<Room> = listOf()
 )
