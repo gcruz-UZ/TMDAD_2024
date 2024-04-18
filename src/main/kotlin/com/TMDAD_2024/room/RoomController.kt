@@ -1,5 +1,7 @@
 package com.TMDAD_2024.room
 
+import com.TMDAD_2024.message.MessageRepository
+import com.TMDAD_2024.message.Message
 import com.TMDAD_2024.user.User
 import com.TMDAD_2024.user.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -7,12 +9,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import kotlin.jvm.optionals.toList
 
 @RestController
 @RequestMapping("/api/rooms")
 class RoomController(
     @Autowired private val roomRepository: RoomRepository,
-    @Autowired private val userRepository: UserRepository
+    @Autowired private val userRepository: UserRepository,
+    @Autowired private val messageRepository: MessageRepository
 ){
     data class PostRoom (
         var name: String,
@@ -79,6 +83,17 @@ class RoomController(
         val updatedRoom = existingRoom.copy(name = room.name)
         roomRepository.save(updatedRoom)
         return ResponseEntity(updatedRoom, HttpStatus.OK)
+    }
+
+    //get messages by room id
+    @CrossOrigin(origins = ["http://localhost:3000"])
+    @GetMapping("/{id}/messages")
+    fun getMessagesByRoomId(@PathVariable("id") roomId: Int): List<Message> {
+        val room = roomRepository.findById(roomId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+
+        return messageRepository.findByRoomId(roomId)
     }
 
 //    //delete user
