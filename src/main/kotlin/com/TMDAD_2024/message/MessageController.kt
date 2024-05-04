@@ -8,8 +8,8 @@ import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/api/messages")
-class MessageController(@Autowired private val messageRepository: MessageRepository) {
-
+class MessageController(@Autowired private val messageRepository: MessageRepository)
+{
     //get all messages
     @GetMapping("")
     fun getAllMessages(): List<Message> =

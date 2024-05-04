@@ -6,13 +6,23 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "chat_user")
-data class User (
+data class User
+(
+    //Clave primaria en BBDD
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int,
+
+    //Login del usuario (debe ser unico en BBDD)
     var login: String,
+
+    //Nombre formal del usuario
     var name: String,
+
+    //Booleano que indica si es superusuario
     var isSuperuser: Boolean = false,
+
+    //Rooms a las que pertenece el usuario
     @JsonManagedReference
     @ManyToMany
     @JoinTable(

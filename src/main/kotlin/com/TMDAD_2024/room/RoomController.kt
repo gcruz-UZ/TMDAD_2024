@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import kotlin.jvm.optionals.toList
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -18,6 +17,7 @@ class RoomController(
     @Autowired private val userRepository: UserRepository,
     @Autowired private val messageRepository: MessageRepository
 ){
+    //Modelo de datos para crear una nueva room
     data class PostRoom (
         var name: String,
         var users: List<String>
@@ -25,8 +25,37 @@ class RoomController(
 
     //get all rooms
     @GetMapping("")
-    fun getAllRooms(): List<Room> =
-        roomRepository.findAll().toList()
+    fun getAllRooms(): List<Room>
+    {
+        //Obtenemos rooms e informamos la lista de logins de cada room
+        val rooms = roomRepository.findAll().toList()
+        rooms.map { room ->
+            room.logins = room.users.map { user ->
+                user.login
+            }
+        }
+
+        //Devolvemos
+        return rooms
+    }
+
+    //get room by id
+    @GetMapping("/{id}")
+    fun getRoomById(@PathVariable("id") roomId: Int): ResponseEntity<Room> {
+        //Obtenemos room
+        val room = roomRepository.findById(roomId).orElse(null)
+
+        //Si existe, informamos lista de logins y devolvemos. Si no, devolvemos 404
+        if(room != null)
+        {
+            room.logins = room.users.map { it.login }
+            return ResponseEntity(room, HttpStatus.OK)
+        }
+        else
+        {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
 
     //create room
     @PostMapping("")
@@ -60,26 +89,13 @@ class RoomController(
         return ResponseEntity(savedRoom, HttpStatus.CREATED)
     }
 
-    //get room by id
-    @GetMapping("/{id}")
-    fun getRoomById(@PathVariable("id") roomId: Int): ResponseEntity<Room> {
-        val room = roomRepository.findById(roomId).orElse(null)
-        return if (room != null) {
-            ResponseEntity(room, HttpStatus.OK)
-        } else {
-            ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-    }
-
     //update room
     @PutMapping("/{id}")
     fun updateRoomById(@PathVariable("id") roomId: Int, @RequestBody room: Room): ResponseEntity<Room> {
-        val existingRoom = roomRepository.findById(roomId).orElse(null)
+        //Traemos la room. Si no existe, devolvemos 404
+        val existingRoom = roomRepository.findById(roomId).orElse(null) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
-        if (existingRoom == null){
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
-
+        //Modificamos, guardamos en BBDD y devolvemos OK
         val updatedRoom = existingRoom.copy(name = room.name)
         roomRepository.save(updatedRoom)
         return ResponseEntity(updatedRoom, HttpStatus.OK)
@@ -89,10 +105,12 @@ class RoomController(
     @CrossOrigin(origins = ["http://localhost:3000"])
     @GetMapping("/{id}/messages")
     fun getMessagesByRoomId(@PathVariable("id") roomId: Int): List<Message> {
+        //Comprobamos que la room existe
         val room = roomRepository.findById(roomId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND)
         }
 
+        //Obtenemos los mensajes de la room
         return messageRepository.findByRoomId(roomId)
     }
 
