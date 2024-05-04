@@ -32,7 +32,7 @@ class WebSocketController(
         val room = roomRepository.findById(msg.roomId).orElse(null)
         userRepository.findByRooms(listOf(room)).map {
             println("Sending to users: ${it.login}")
-            messagingTemplate.convertAndSend("/topic/greetings/${it.login}", msg)
+            messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
         }
     }
 }
