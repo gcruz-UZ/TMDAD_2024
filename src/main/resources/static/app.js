@@ -2,7 +2,7 @@
 // const stompClient = Stomp.over(socket);
 
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/gs-guide-websocket',
+    brokerURL: 'ws://localhost:8080/ws',
     // connectHeaders: {
     //     login: "user",
     //     passcode: "password",
