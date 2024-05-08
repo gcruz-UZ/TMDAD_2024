@@ -16,6 +16,9 @@ data class Room
     //Nombre de la room
     var name: String,
 
+    //Id de usuario en BBDD que controla esta sala
+    var moderatorId: Int?,
+
     //Lista de usuarios que pertenecen a la room
     @JsonBackReference
     @ManyToMany(mappedBy = "rooms")
@@ -27,5 +30,5 @@ data class Room
 )
 {
     //Constructor que recibe el nombre de la room
-    constructor(name: String) : this (null, name, logins = listOf())
+    constructor(name: String, moderatorId: Int?, logins: List<String>) : this (null, name, moderatorId, logins = logins)
 }

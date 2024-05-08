@@ -4,18 +4,26 @@ import com.TMDAD_2024.message.MessageRepository
 import com.TMDAD_2024.message.Message
 import com.TMDAD_2024.user.User
 import com.TMDAD_2024.user.UserRepository
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import com.TMDAD_2024.security.jwt.JwtUtils
+import com.TMDAD_2024.security.services.UserDetailsImpl
+import com.TMDAD_2024.security.services.UserDetailsServiceImpl
+import org.springframework.messaging.simp.SimpMessagingTemplate
 
 @RestController
 @RequestMapping("/api/rooms")
 class RoomController(
     @Autowired private val roomRepository: RoomRepository,
     @Autowired private val userRepository: UserRepository,
-    @Autowired private val messageRepository: MessageRepository
+    @Autowired private val messageRepository: MessageRepository,
+    @Autowired private val jwtUtils: JwtUtils,
+    @Autowired private val userDetailsService: UserDetailsServiceImpl,
+    @Autowired private val messagingTemplate: SimpMessagingTemplate,
 ){
     //Modelo de datos para crear una nueva room
     data class PostRoom (
@@ -58,8 +66,9 @@ class RoomController(
     }
 
     //create room
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
     @PostMapping("")
-    fun createRoom(@RequestBody room: PostRoom): ResponseEntity<Room> {
+    fun createRoom(request: HttpServletRequest, @RequestBody room: PostRoom): ResponseEntity<Room> {
         //Controlar que al menos llega un usuario
         if(room.users.isEmpty())
             return ResponseEntity(HttpStatus.BAD_REQUEST)
@@ -74,8 +83,13 @@ class RoomController(
             users.add(user)
         }
 
+        //El moderador de la room es el usuario que realiza la llamada (JWT)
+        val jwt = jwtUtils.getJwtFromCookies(request)
+        val userName = jwtUtils.getUserNameFromJwtToken(jwt.toString())
+        val userId = (userDetailsService.loadUserByUsername(userName) as UserDetailsImpl).id
+
         //Guardamos en BBDD la nueva room
-        val savedRoom = roomRepository.save(Room(room.name))
+        val savedRoom = roomRepository.save(Room(room.name, userId, users.map { it.login }))
 
         //Le asignamos la nueva room a los usuarios
         for (user in users)
@@ -83,10 +97,60 @@ class RoomController(
             userRepository.save(
                 user.copy(rooms = user.rooms.plus(savedRoom))
             )
+
+            //Enviamos nueva room a los users
+            messagingTemplate.convertAndSend("/topic/rooms/${user.login}", savedRoom)
         }
 
         //Devolvemos
         return ResponseEntity(savedRoom, HttpStatus.CREATED)
+    }
+
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @Throws(ResponseStatusException::class)
+    @PutMapping("/{id}/user/{login}")
+    fun addUserToRoom(request: HttpServletRequest,
+                      @PathVariable("id") roomId: Int,
+                      @PathVariable("login") login: String): ResponseEntity<*> {
+        //Traemos la room. Si no existe, devolvemos 404
+        val existingRoom = roomRepository.findById(roomId).orElse(null)
+            ?: return ResponseEntity("Room $roomId not found", HttpStatus.NOT_FOUND)
+
+        //Comprobamos que quien realiza la llamada es el moderador
+        val jwt = jwtUtils.getJwtFromCookies(request)
+        val userName = jwtUtils.getUserNameFromJwtToken(jwt.toString())
+        val userId = (userDetailsService.loadUserByUsername(userName) as UserDetailsImpl).id
+        if(existingRoom.moderatorId != userId)
+            return ResponseEntity("You are not the moderator of this room", HttpStatus.BAD_REQUEST)
+
+        //Traemos el user. Si no existe, devolvemos 404
+        val user = userRepository.findByLogin(login).orElse(null)
+            ?: return ResponseEntity("User $login not found", HttpStatus.NOT_FOUND)
+
+        //Checkeamos si el usuario ya pertenece a la room
+        user.rooms.map {
+            if(it.id == roomId)
+            {
+                return ResponseEntity("User $login already belongs to room $roomId", HttpStatus.BAD_REQUEST)
+            }
+        }
+
+        //Añadimos el usuario a la room
+        userRepository.save(
+            user.copy(rooms = user.rooms.plus(existingRoom))
+        )
+
+        existingRoom.logins = userRepository.findByRooms(listOf(existingRoom)).map {
+//            println("Sending to users: ${it.login}")
+//            messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
+            it.login
+        }
+
+        //Enviamos nueva room al user
+        messagingTemplate.convertAndSend("/topic/rooms/${user.login}", existingRoom)
+
+        //Devolvemos ok
+        return ResponseEntity(existingRoom, HttpStatus.OK)
     }
 
     //update room
