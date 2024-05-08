@@ -12,4 +12,7 @@ interface UserRepository : CrudRepository<User, Int>
     //Para obtener los usuarios que pertenecen a una room (Aunque el argumento es una lista,
     // se le pasa una lista con una unica room, y ya)
     fun findByRooms(rooms: List<Room>) : List<User>
+
+    //Para consultar si existe un usuario por login
+    fun existsByLogin(login: String): Boolean
 }

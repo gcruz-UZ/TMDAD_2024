@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-@Component
-class ConsoleMessagePrinter : CommandLineRunner {
-
-	override fun run(vararg args: String?) {
-		val scheduler = Executors.newSingleThreadScheduledExecutor()
-		val intervalInSeconds = 30L
-
-		scheduler.scheduleAtFixedRate({
-			println("Printing a message every $intervalInSeconds seconds")
-		}, 0, intervalInSeconds, TimeUnit.SECONDS)
-	}
-}
+//@Component
+//class ConsoleMessagePrinter : CommandLineRunner {
+//
+//	override fun run(vararg args: String?) {
+//		val scheduler = Executors.newSingleThreadScheduledExecutor()
+//		val intervalInSeconds = 30L
+//
+//		scheduler.scheduleAtFixedRate({
+//			println("Printing a message every $intervalInSeconds seconds")
+//		}, 0, intervalInSeconds, TimeUnit.SECONDS)
+//	}
+//}
 
 @SpringBootApplication
 class ChatApplication

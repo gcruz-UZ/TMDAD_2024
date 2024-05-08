@@ -102,7 +102,7 @@ class RoomController(
     }
 
     //get messages by room id
-    @CrossOrigin(origins = ["http://localhost:3000"])
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true",)
     @GetMapping("/{id}/messages")
     fun getMessagesByRoomId(@PathVariable("id") roomId: Int): List<Message> {
         //Comprobamos que la room existe

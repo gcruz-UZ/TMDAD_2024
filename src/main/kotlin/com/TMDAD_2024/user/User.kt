@@ -11,10 +11,13 @@ data class User
     //Clave primaria en BBDD
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int,
+    var id: Int?,
 
     //Login del usuario (debe ser unico en BBDD)
     var login: String,
+
+    //Contraseña
+    var password: String,
 
     //Nombre formal del usuario
     var name: String,
@@ -32,3 +35,10 @@ data class User
     )
     val rooms: List<Room> = listOf()
 )
+{
+    constructor(login: String, password: String, name: String, isSuperuser: Boolean)
+            : this (null, login, password, name, isSuperuser)
+
+    constructor(login: String, password: String)
+            : this (null, login, password, "empty", false)
+}
