@@ -18,8 +18,8 @@ data class Message
     //Momento en el que se envío
     var timeSent: Timestamp?,
 
-    //Booleano que indica si el mensaje es un archivo
-    var isFile: Boolean = false,
+    //String que indica si el mensaje es un archivo
+    var filename: String,
 
     //Booleano que indica si el mensaje es publicidad
     var isAd: Boolean = false,
