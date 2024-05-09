@@ -30,6 +30,16 @@ class JwtUtils {
         return cookie?.value
     }
 
+    fun getJwtFromString(jwt: String): String? {
+        val start = jwt.indexOf("=") + 1
+        val end = jwt.indexOf(";")
+        return if (start != -1 && end != -1) {
+            jwt.substring(start, end)
+        } else {
+            null
+        }
+    }
+
     fun generateJwtCookie(userPrincipal: UserDetailsImpl): ResponseCookie {
         val jwt = generateTokenFromUsername(userPrincipal.username)
         val cookie =

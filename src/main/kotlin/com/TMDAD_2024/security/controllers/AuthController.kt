@@ -49,7 +49,7 @@ class AuthController(
     class MessageResponse(var message: String)
 
     class UserInfoResponse(var id: Int?, var login: String, var name: String, var isSuperUser: Boolean,
-        var rooms: List<Room>)
+        var rooms: List<Room>, var token: String)
 
     @PostMapping("/signup")
     fun registerUser(@RequestBody signUpRequest: @Valid SignUpRequest): ResponseEntity<*> {
@@ -96,7 +96,8 @@ class AuthController(
                     userDetails.username,
                     userDetails.name,
                     userDetails.isSuperuser,
-                    userDetails.rooms
+                    userDetails.rooms,
+                    jwtCookie.toString()
                 )
             )
     }
