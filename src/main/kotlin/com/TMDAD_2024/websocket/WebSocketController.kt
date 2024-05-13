@@ -24,12 +24,34 @@ class WebSocketController(
     fun message(msg: Message) {
         println("Received message: $msg")
 
+        val user = userRepository.findById(msg.userId).orElse(null)
+        if(user == null)
+        {
+            println("user not found")
+            return
+        }
+
+        if(msg.isAd && !user.isSuperuser)
+        {
+            println("ad is only for superusers")
+            return
+        }
+
         //Añadimos el timestamp y lo almacenamos en BBDD
         msg.timeSent = Timestamp(System.currentTimeMillis())
         messageRepository.save(msg)
 
+        //Si es AD, enviamos y ya
+        if(msg.isAd)
+        {
+            println("Sending AD to topic")
+            messagingTemplate.convertAndSend("/topic/ad", msg)
+            return
+        }
+
         //Ahora, obtenemos la room a la que pertenece el mensaje, y lo reenviamos a los users de dicha room
-        val room = roomRepository.findById(msg.roomId).orElse(null)
+        val roomId = msg.roomId ?: -1
+        val room = roomRepository.findById(roomId).orElse(null)
         userRepository.findByRooms(listOf(room)).map {
             println("Sending to users: ${it.login}")
             messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)

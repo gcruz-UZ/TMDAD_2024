@@ -19,8 +19,15 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
 {
     //get all messages
     @GetMapping("")
-    fun getAllMessages(): List<Message> =
+    fun getAllMessages() : List<Message> =
         messageRepository.findAll().toList()
+
+    //Obtener mensajes que son AD
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @GetMapping("/ad")
+    fun getAdMessages(): List<Message> =
+        messageRepository.findByIsAd(true).toList()
+
 
     //create message
     @PostMapping("")
