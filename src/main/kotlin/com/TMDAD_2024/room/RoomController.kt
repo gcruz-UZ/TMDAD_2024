@@ -270,6 +270,37 @@ class RoomController(
         return messageRepository.findByRoomId(roomId)
     }
 
+    //get users by room id
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @GetMapping("/{id}/users")
+    fun getUsersByRoomId(@PathVariable("id") roomId: Int): List<User> {
+        //Comprobamos que la room existe
+        val room = roomRepository.findById(roomId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+
+        //Obtenemos los users de la room
+        return userRepository.findByRooms(listOf(room))
+    }
+
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @GetMapping("/{id}/candidate-users")
+    fun getCandidateUsersByRoomId(@PathVariable("id") roomId: Int): List<User> {
+        //Comprobamos que la room existe
+        val room = roomRepository.findById(roomId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+
+        //Obtenemos users
+        val users = userRepository.findAll().toList()
+
+        //Obtenemos users de la room
+        val usersInRoom = userRepository.findByRooms(listOf(room))
+
+        //Devolvemos la dierencia
+        return users.filter { obj1 -> usersInRoom.none { obj2 -> obj1.id == obj2.id } }
+    }
+
 //    //delete user
 //    @DeleteMapping("/{id}")
 //    fun deletedUSerById(@PathVariable("id") userId: Int): ResponseEntity<User> {
