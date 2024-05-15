@@ -11,6 +11,7 @@ import java.time.ZoneOffset
 class UserController(@Autowired private val userRepository: UserRepository)
 {
     //get all users
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
     @GetMapping("")
     fun getAllUsers(): List<User>
     {

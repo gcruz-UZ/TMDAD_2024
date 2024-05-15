@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException
 import com.TMDAD_2024.security.jwt.JwtUtils
 import com.TMDAD_2024.security.services.UserDetailsImpl
 import com.TMDAD_2024.security.services.UserDetailsServiceImpl
+import jakarta.transaction.Transactional
 import org.springframework.messaging.simp.SimpMessagingTemplate
 
 @RestController
@@ -45,6 +46,12 @@ class RoomController(
 
         //Devolvemos
         return rooms
+    }
+
+    @GetMapping("/publish")
+    fun sendMessage(@RequestParam("message") message: String): ResponseEntity<String> {
+        messagingTemplate.convertAndSend("/topic/stats", message)
+        return ResponseEntity.ok("Message sent to STATS ...")
     }
 
     //get room by id
@@ -151,6 +158,91 @@ class RoomController(
 
         //Devolvemos ok
         return ResponseEntity(existingRoom, HttpStatus.OK)
+    }
+
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @Throws(ResponseStatusException::class)
+    @DeleteMapping("/{id}/user/{login}")
+    fun removeUserFromRoom(request: HttpServletRequest,
+                      @PathVariable("id") roomId: Int,
+                      @PathVariable("login") login: String): ResponseEntity<*> {
+        //Traemos la room. Si no existe, devolvemos 404
+        val existingRoom = roomRepository.findById(roomId).orElse(null)
+            ?: return ResponseEntity("Room $roomId not found", HttpStatus.NOT_FOUND)
+
+        //Comprobamos que quien realiza la llamada es el moderador
+        val jwt = jwtUtils.getJwtFromCookies(request)
+        val userName = jwtUtils.getUserNameFromJwtToken(jwt.toString())
+        val userId = (userDetailsService.loadUserByUsername(userName) as UserDetailsImpl).id
+        if(existingRoom.moderatorId != userId)
+            return ResponseEntity("You are not the moderator of this room", HttpStatus.BAD_REQUEST)
+
+        //Traemos el user. Si no existe, devolvemos 404
+        val user = userRepository.findByLogin(login).orElse(null)
+            ?: return ResponseEntity("User $login not found", HttpStatus.NOT_FOUND)
+
+        //Checkeamos si el usuario pertenece a la room
+        var exists = false
+        user.rooms.map {
+            if(it.id == roomId)
+                exists = true
+        }
+
+        if(!exists)
+            return ResponseEntity("User $login does not belong to room $roomId", HttpStatus.BAD_REQUEST)
+
+        //Quitamos el usuario de la room
+        userRepository.save(
+            user.copy(rooms = user.rooms.filter { it.id != roomId })
+        )
+
+        existingRoom.logins = userRepository.findByRooms(listOf(existingRoom)).map {
+//            println("Sending to users: ${it.login}")
+//            messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
+            it.login
+        }
+
+        //Enviamos informacion al user
+        messagingTemplate.convertAndSend("/topic/removedFromRoom/${user.login}", existingRoom)
+
+        //Devolvemos ok
+        return ResponseEntity(existingRoom, HttpStatus.OK)
+    }
+
+    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @Throws(ResponseStatusException::class)
+    @Transactional
+    @DeleteMapping("/{id}")
+    fun removeRoom(request: HttpServletRequest,
+                           @PathVariable("id") roomId: Int): ResponseEntity<*> {
+        //Traemos la room. Si no existe, devolvemos 404
+        val existingRoom = roomRepository.findById(roomId).orElse(null)
+            ?: return ResponseEntity("Room $roomId not found", HttpStatus.NOT_FOUND)
+
+        //Comprobamos que quien realiza la llamada es el moderador
+        val jwt = jwtUtils.getJwtFromCookies(request)
+        val userName = jwtUtils.getUserNameFromJwtToken(jwt.toString())
+        val userId = (userDetailsService.loadUserByUsername(userName) as UserDetailsImpl).id
+        if(existingRoom.moderatorId != userId)
+            return ResponseEntity("You are not the moderator of this room", HttpStatus.BAD_REQUEST)
+
+        //Traemos los usuarios de esta room y se la eliminamos
+        val users = userRepository.findByRooms(listOf(existingRoom))
+        for(user in users)
+        {
+            userRepository.save(
+                user.copy(rooms = user.rooms.filter { it.id != roomId })
+            )
+
+            //Avisamos por el websocket
+            messagingTemplate.convertAndSend("/topic/removedFromRoom/${user.login}", existingRoom)
+        }
+
+        //Borramos los mensajes de esta room
+        messageRepository.deleteByRoomId(roomId)
+
+        //Devolvemos ok
+        return ResponseEntity("Room con ID ${roomId} borrada", HttpStatus.OK)
     }
 
     //update room
