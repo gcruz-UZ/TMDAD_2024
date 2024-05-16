@@ -75,9 +75,9 @@ class WebSecurityConfig {
 
 //        http.requiresChannel { requests -> requests.anyRequest().requiresSecure() }
 
-        http.requiresChannel{
-            c -> c.requestMatchers({ r -> r.getHeader("X-Forwarded-Proto") != null }).requiresSecure()
-        }
+//        http.requiresChannel{
+//            c -> c.requestMatchers({ r -> r.getHeader("X-Forwarded-Proto") != null }).requiresSecure()
+//        }
 
 //        .requiresSecure())
 
