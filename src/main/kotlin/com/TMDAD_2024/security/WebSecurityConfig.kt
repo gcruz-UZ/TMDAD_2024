@@ -72,6 +72,8 @@ class WebSecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
+        http.requiresChannel { requests -> requests.anyRequest().requiresSecure() }
+
         return http.build()
     }
 }
