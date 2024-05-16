@@ -53,7 +53,7 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         return "File uploaded successfully: ${file.originalFilename}"
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com", allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @GetMapping("/download/{filename:.+}")
     fun downloadFile(@PathVariable filename: String): ResponseEntity<*> {
         val file: Path = targetLocation.resolve(filename).normalize()
