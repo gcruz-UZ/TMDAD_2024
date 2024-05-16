@@ -59,7 +59,7 @@ application {
 
 tasks.withType<Jar> {
 	manifest {
-		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplication"
+		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplicationKt"
 	}
 }
 
