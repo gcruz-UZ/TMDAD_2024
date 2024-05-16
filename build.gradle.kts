@@ -66,16 +66,16 @@ tasks.withType<Jar> {
 	}
 
 	// To avoid the duplicate handling strategy error
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	// To add all of the dependencies
 //	from(sourceSets.main.get().output)
 //
 //	dependsOn(configurations.runtimeClasspath)
-	from({
-//		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-	})
+//	from({
+////		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+//		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+//	})
 //	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 //	with(tasks.jar.get())
 }
