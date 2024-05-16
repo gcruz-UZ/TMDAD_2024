@@ -87,7 +87,7 @@ tasks.withType<Jar> {
 	from({
 //		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
 		configurations.runtimeClasspath.get().filter { it.name.endsWith("stdlib-1.9.23.jar") || it.name.endsWith("boot-3.2.4.jar")
-				|| it.name.endsWith("context-6.1.5.jar")}.map { zipTree(it) }
+				|| it.name.endsWith("context-6.1.5.jar") || it.name.endsWith("core-6.1.5.jar")}.map { zipTree(it) }
 //		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
 //		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
 //		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
