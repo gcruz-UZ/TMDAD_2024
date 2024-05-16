@@ -23,7 +23,7 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         messageRepository.findAll().toList()
 
     //Obtener mensajes que son AD
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @GetMapping("/ad")
     fun getAdMessages(): List<Message> =
         messageRepository.findByIsAd(true).toList()
@@ -43,7 +43,7 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         Files.createDirectories(targetLocation)
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @PostMapping("/fileUpload")
     fun uploadFile(@RequestParam("file") file: MultipartFile): String {
         val targetPath = targetLocation.resolve(file.originalFilename!!)
@@ -53,7 +53,7 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         return "File uploaded successfully: ${file.originalFilename}"
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com", allowCredentials = "true")
     @GetMapping("/download/{filename:.+}")
     fun downloadFile(@PathVariable filename: String): ResponseEntity<*> {
         val file: Path = targetLocation.resolve(filename).normalize()

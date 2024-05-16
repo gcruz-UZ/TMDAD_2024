@@ -47,7 +47,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         //Añadimos el endpoint de WS y permitimos el host web para evitar problemas de CORS
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000")
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com")
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {

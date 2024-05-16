@@ -19,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 import java.util.stream.Collectors
 
-@CrossOrigin(origins = ["http://localhost:3000"], maxAge = 3600, allowCredentials = "true")
+@CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(

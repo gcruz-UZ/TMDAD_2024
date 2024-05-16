@@ -73,7 +73,7 @@ class RoomController(
     }
 
     //create room
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @PostMapping("")
     fun createRoom(request: HttpServletRequest, @RequestBody room: PostRoom): ResponseEntity<Room> {
         //Controlar que al menos llega un usuario
@@ -113,7 +113,7 @@ class RoomController(
         return ResponseEntity(savedRoom, HttpStatus.CREATED)
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @Throws(ResponseStatusException::class)
     @PutMapping("/{id}/user/{login}")
     fun addUserToRoom(request: HttpServletRequest,
@@ -160,7 +160,7 @@ class RoomController(
         return ResponseEntity(existingRoom, HttpStatus.OK)
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @Throws(ResponseStatusException::class)
     @DeleteMapping("/{id}/user/{login}")
     fun removeUserFromRoom(request: HttpServletRequest,
@@ -209,7 +209,7 @@ class RoomController(
         return ResponseEntity(existingRoom, HttpStatus.OK)
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @Throws(ResponseStatusException::class)
     @Transactional
     @DeleteMapping("/{id}")
@@ -258,7 +258,7 @@ class RoomController(
     }
 
     //get messages by room id
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true",)
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true",)
     @GetMapping("/{id}/messages")
     fun getMessagesByRoomId(@PathVariable("id") roomId: Int): List<Message> {
         //Comprobamos que la room existe
@@ -271,7 +271,7 @@ class RoomController(
     }
 
     //get users by room id
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @GetMapping("/{id}/users")
     fun getUsersByRoomId(@PathVariable("id") roomId: Int): List<User> {
         //Comprobamos que la room existe
@@ -283,7 +283,7 @@ class RoomController(
         return userRepository.findByRooms(listOf(room))
     }
 
-    @CrossOrigin(origins = ["http://localhost:3000"], allowCredentials = "true")
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @GetMapping("/{id}/candidate-users")
     fun getCandidateUsersByRoomId(@PathVariable("id") roomId: Int): List<User> {
         //Comprobamos que la room existe
