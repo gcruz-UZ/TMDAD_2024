@@ -86,8 +86,8 @@ tasks.withType<Jar> {
 	dependsOn(configurations.runtimeClasspath)
 	from({
 //		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-//		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
+//		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
 //		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
 	})
 //	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
