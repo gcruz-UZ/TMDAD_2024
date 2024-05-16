@@ -71,24 +71,24 @@ application {
 //}
 
 tasks.withType<Jar> {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	manifest {
 		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplicationKt"
 	}
 
 	// To avoid the duplicate handling strategy error
-//	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	// To add all of the dependencies
-//	from(sourceSets.main.get().output)
+	from(sourceSets.main.get().output)
 //
-//	dependsOn(configurations.runtimeClasspath)
+	dependsOn(configurations.runtimeClasspath)
 	from({
 //		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-//		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
 //		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
-		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
+//		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
 	})
 //	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 //	with(tasks.jar.get())
