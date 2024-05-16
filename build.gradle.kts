@@ -69,9 +69,9 @@ tasks.withType<Jar> {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 	// To add all of the dependencies
-	from(sourceSets.main.get().output)
-
-	dependsOn(configurations.runtimeClasspath)
+//	from(sourceSets.main.get().output)
+//
+//	dependsOn(configurations.runtimeClasspath)
 	from({
 //		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
 		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
