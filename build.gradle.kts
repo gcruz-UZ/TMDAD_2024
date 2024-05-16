@@ -27,7 +27,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.jetbrains.kotlin:kotlin-stdlib")
+//	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
@@ -59,16 +59,16 @@ application {
 	mainClass.set("com.TMDAD_2024.ChatApplicationKt")
 }
 
-tasks.register<Copy>("kotlinClasspath") {
-	// Copy the Kotlin standard library to a separate directory
-	from(configurations["implementation"].filter { it.name.contains("kotlin-stdlib") })
-	into("${layout.buildDirectory}/kotlinClasspath")
-}
-
-tasks.getByName("build") {
-	// Make the build task depend on the kotlinClasspath task
-	dependsOn("kotlinClasspath")
-}
+//tasks.register<Copy>("kotlinClasspath") {
+//	// Copy the Kotlin standard library to a separate directory
+//	from(configurations["implementation"].filter { it.name.contains("kotlin-stdlib") })
+//	into("${layout.buildDirectory}/kotlinClasspath")
+//}
+//
+//tasks.getByName("build") {
+//	// Make the build task depend on the kotlinClasspath task
+//	dependsOn("kotlinClasspath")
+//}
 
 tasks.withType<Jar> {
 //	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -84,10 +84,11 @@ tasks.withType<Jar> {
 //	from(sourceSets.main.get().output)
 //
 //	dependsOn(configurations.runtimeClasspath)
-//	from({
-////		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+	from({
+//		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
 //		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-//	})
+		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
+	})
 //	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 //	with(tasks.jar.get())
 }
