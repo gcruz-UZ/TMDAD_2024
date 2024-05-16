@@ -58,9 +58,13 @@ application {
 }
 
 tasks.withType<Jar> {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
 	manifest {
 		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplicationKt"
 	}
+	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+	with(tasks.jar.get())
 }
 
 
