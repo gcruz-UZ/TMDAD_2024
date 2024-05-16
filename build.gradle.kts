@@ -50,10 +50,12 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-//tasks.withType<Jar> {
-//	manifest {
-//		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplication"
-//	}
-//}
-
 springBoot { mainClass.set("com.TMDAD_2024.ChatApplication") }
+
+tasks.withType<Jar> {
+	manifest {
+		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplication"
+	}
+}
+
+
