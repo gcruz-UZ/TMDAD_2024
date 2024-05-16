@@ -37,8 +37,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	runtimeOnly("org.postgresql:postgresql")
-//	testImplementation("org.springframework.boot:spring-boot-starter-test")
-//	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<KotlinCompile> {
@@ -70,31 +70,31 @@ application {
 //	dependsOn("kotlinClasspath")
 //}
 
-tasks.withType<Jar> {
-//	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	manifest {
-		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplicationKt"
-	}
-
-	// To avoid the duplicate handling strategy error
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	// To add all of the dependencies
-	from(sourceSets.main.get().output)
+//tasks.withType<Jar> {
+////	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 //
-	dependsOn(configurations.runtimeClasspath)
-	from({
-//		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-		configurations.runtimeClasspath.get().filter { it.name.endsWith("stdlib-1.9.23.jar") || it.name.endsWith("boot-3.2.4.jar")
-				|| it.name.endsWith("context-6.1.5.jar") || it.name.endsWith("core-6.1.5.jar")
-				|| it.name.endsWith("beans-6.1.5.jar")}.map { zipTree(it) }
-//		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-//		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
-//		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
-	})
-//	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-//	with(tasks.jar.get())
-}
+//	manifest {
+//		attributes["Main-Class"] = "com.TMDAD_2024.ChatApplicationKt"
+//	}
+//
+////	// To avoid the duplicate handling strategy error
+////	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+////
+////	// To add all of the dependencies
+////	from(sourceSets.main.get().output)
+//////
+////	dependsOn(configurations.runtimeClasspath)
+////	from({
+//////		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+////		configurations.runtimeClasspath.get().filter { it.name.endsWith("stdlib-1.9.23.jar") || it.name.endsWith("boot-3.2.4.jar")
+////				|| it.name.endsWith("context-6.1.5.jar") || it.name.endsWith("core-6.1.5.jar")
+////				|| it.name.endsWith("beans-6.1.5.jar")}.map { zipTree(it) }
+//////		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+//////		configurations.runtimeClasspath.get().map { if (it.isDirectory) println("Folder " + it.name) else println("File " + it.name) }
+//////		configurations.runtimeClasspath.get().map { if (it.name == "kotlin-stdlib-1.9.23.jar") zipTree(it) }
+////	})
+//////	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+//////	with(tasks.jar.get())
+//}
 
 

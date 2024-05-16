@@ -5,6 +5,7 @@ import com.TMDAD_2024.security.services.UserDetailsServiceImpl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
@@ -19,10 +20,17 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import java.util.concurrent.atomic.AtomicInteger
 
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
+
+    @Bean
+    fun connections(): AtomicInteger {
+        return AtomicInteger(0)
+    }
+
     @Autowired
     private val jwtUtils: JwtUtils? = null
 
@@ -43,6 +51,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
+        val connections = connections()
         registration.interceptors(object : ChannelInterceptor {
             override fun preSend(message: Message<*>, channel: MessageChannel) : Message<*> {
                 val accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor::class.java)
@@ -59,6 +68,13 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
                         UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
                     SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
                     accessor.user = usernamePasswordAuthenticationToken
+
+                    connections.incrementAndGet()
+                }
+
+                if(StompCommand.DISCONNECT == accessor?.command)
+                {
+                    connections().decrementAndGet()
                 }
                 
                 return message
