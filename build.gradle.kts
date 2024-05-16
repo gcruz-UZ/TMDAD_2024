@@ -50,7 +50,7 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-springBoot { mainClass.set("com.TMDAD_2024.ChatApplication") }
+springBoot { mainClass.set("com.TMDAD_2024.ChatApplicationKt") }
 
 tasks.withType<Jar> {
 	manifest {
