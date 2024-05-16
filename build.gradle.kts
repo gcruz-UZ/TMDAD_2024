@@ -59,6 +59,17 @@ application {
 	mainClass.set("com.TMDAD_2024.ChatApplicationKt")
 }
 
+tasks.register<Copy>("kotlinClasspath") {
+	// Copy the Kotlin standard library to a separate directory
+	from(configurations["implementation"].filter { it.name.contains("kotlin-stdlib") })
+	into("${layout.buildDirectory}/kotlinClasspath")
+}
+
+tasks.getByName("build") {
+	// Make the build task depend on the kotlinClasspath task
+	dependsOn("kotlinClasspath")
+}
+
 tasks.withType<Jar> {
 //	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
