@@ -73,7 +73,8 @@ tasks.withType<Jar> {
 
 	dependsOn(configurations.runtimeClasspath)
 	from({
-		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+//		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+		configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
 	})
 //	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 //	with(tasks.jar.get())
