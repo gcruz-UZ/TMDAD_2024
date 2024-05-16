@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+
 @Configuration
 @EnableMethodSecurity
 class WebSecurityConfig {
@@ -72,7 +73,13 @@ class WebSecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
-        http.requiresChannel { requests -> requests.anyRequest().requiresSecure() }
+//        http.requiresChannel { requests -> requests.anyRequest().requiresSecure() }
+
+        http.requiresChannel{
+            c -> c.requestMatchers({ r -> r.getHeader("X-Forwarded-Proto") != null }).requiresSecure()
+        }
+
+//        .requiresSecure())
 
         return http.build()
     }
