@@ -54,7 +54,7 @@ tasks.withType<Test> {
 //springBoot { mainClass.set("com.TMDAD_2024.ChatApplicationKt") }
 
 application {
-	mainClass = "com.TMDAD_2024.ChatApplication"
+	mainClass.set("com.TMDAD_2024.ChatApplicationKt")
 }
 
 tasks.withType<Jar> {
