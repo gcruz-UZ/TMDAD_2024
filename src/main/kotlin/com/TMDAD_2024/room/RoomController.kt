@@ -155,6 +155,13 @@ class RoomController(
             it.login
         }
 
+        //Buscamos el ultimo mensaje de la room
+        existingRoom.lastMessage = existingRoom.id?.let { messageRepository.findLastMessageByRoomId(it) }
+        if(existingRoom.lastMessage != null)
+            existingRoom.lastMessageTime = existingRoom.lastMessage!!.timeSent!!
+        else
+            existingRoom.lastMessageTime = existingRoom.createdAt
+
         //Enviamos nueva room al user
         messagingTemplate.convertAndSend("/topic/rooms/${user.login}", existingRoom)
 
