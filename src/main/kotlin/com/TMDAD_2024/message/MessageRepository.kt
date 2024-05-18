@@ -11,9 +11,6 @@ interface MessageRepository : CrudRepository<Message, Int>
     //Para obtener los mensajes que son AD
     fun findByIsAd(isAd: Boolean) : List<Message>
 
-    // New method to find messages with timeSent after the specified timestamp
-    fun findByTimeSentAfter(timeSent: Timestamp): List<Message>
-
     //Para borrar mensajes de una room
     fun deleteByRoomId(roomId: Int)
 }

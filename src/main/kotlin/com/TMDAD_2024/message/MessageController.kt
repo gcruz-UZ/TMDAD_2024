@@ -17,20 +17,10 @@ import org.springframework.http.HttpHeaders
 @RequestMapping("/api/messages")
 class MessageController(@Autowired private val messageRepository: MessageRepository)
 {
-//    //get all messages
-//    @GetMapping("")
-//    fun getAllMessages() : List<Message> =
-//        messageRepository.findAll().toList()
-
+    //get all messages
     @GetMapping("")
-    fun getAllMessages(@RequestParam(required = false) timestampFilter: String?) : List<Message> {
-        return if (timestampFilter != null) {
-            println(Timestamp(timestampFilter.toLong()))
-            messageRepository.findByTimeSentAfter(Timestamp(timestampFilter.toLong())).toList()
-        } else {
-            messageRepository.findAll().toList()
-        }
-    }
+    fun getAllMessages() : List<Message> =
+        messageRepository.findAll().toList()
 
     //Obtener mensajes que son AD
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
