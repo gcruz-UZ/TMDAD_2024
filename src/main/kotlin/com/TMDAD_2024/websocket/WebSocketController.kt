@@ -4,6 +4,7 @@ import com.TMDAD_2024.message.Message
 import com.TMDAD_2024.message.MessageRepository
 import com.TMDAD_2024.room.RoomRepository
 import com.TMDAD_2024.user.UserRepository
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -15,7 +16,8 @@ class WebSocketController(
     @Autowired private val messagingTemplate: SimpMessagingTemplate,
     @Autowired private val messageRepository: MessageRepository,
     @Autowired private val roomRepository: RoomRepository,
-    @Autowired private val userRepository: UserRepository
+    @Autowired private val userRepository: UserRepository,
+    @Autowired private val rabbitTemplate: RabbitTemplate
 )
 {
     //Recibimos mensaje
@@ -56,5 +58,7 @@ class WebSocketController(
             println("Sending to users: ${it.login}")
             messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
         }
+
+        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
     }
 }
