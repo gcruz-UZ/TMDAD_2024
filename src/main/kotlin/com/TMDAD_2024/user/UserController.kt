@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.ZoneOffset
+import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/api/users")
@@ -53,6 +53,9 @@ class UserController(@Autowired private val userRepository: UserRepository)
     //create user
     @PostMapping("")
     fun createUser(@RequestBody user: User): ResponseEntity<User> {
+        if(user.lastSignIn == null)
+            user.lastSignIn = Timestamp(System.currentTimeMillis())
+
         //Guardamos en BBDD y devolvemos
         val savedUser = userRepository.save(user)
         return ResponseEntity(savedUser, HttpStatus.CREATED)

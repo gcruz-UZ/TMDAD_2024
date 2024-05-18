@@ -15,6 +15,7 @@ import com.TMDAD_2024.security.services.UserDetailsImpl
 import com.TMDAD_2024.security.services.UserDetailsServiceImpl
 import jakarta.transaction.Transactional
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import java.sql.Timestamp
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -96,7 +97,8 @@ class RoomController(
         val userId = (userDetailsService.loadUserByUsername(userName) as UserDetailsImpl).id
 
         //Guardamos en BBDD la nueva room
-        val savedRoom = roomRepository.save(Room(room.name, userId, users.map { it.login }))
+        val savedRoom = roomRepository.save(Room(room.name, Timestamp(System.currentTimeMillis()),
+            userId, users.map { it.login }))
 
         //Le asignamos la nueva room a los usuarios
         for (user in users)

@@ -3,6 +3,7 @@ package com.TMDAD_2024.user
 import com.TMDAD_2024.room.Room
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
+import java.sql.Timestamp
 
 @Entity
 @Table(name = "chat_user")
@@ -25,6 +26,9 @@ data class User
     //Booleano que indica si es superusuario
     var isSuperuser: Boolean = false,
 
+    //Hora de ultimo signin del user
+    var lastSignIn: Timestamp?,
+
     //Rooms a las que pertenece el usuario
     @JsonManagedReference
     @ManyToMany
@@ -36,9 +40,6 @@ data class User
     val rooms: List<Room> = listOf()
 )
 {
-    constructor(login: String, password: String, name: String, isSuperuser: Boolean)
-            : this (null, login, password, name, isSuperuser)
-
     constructor(login: String, password: String)
-            : this (null, login, password, "empty", false)
+            : this (null, login, password, "empty", false, Timestamp(System.currentTimeMillis()))
 }

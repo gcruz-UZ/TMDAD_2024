@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.sql.Timestamp
 import java.util.stream.Collectors
 
 class UserDetailsImpl(
@@ -14,6 +15,7 @@ class UserDetailsImpl(
     val name: String,
     @field:JsonIgnore private val password: String,
     val isSuperuser: Boolean,
+    val lastSignIn: Timestamp?,
     val rooms: List<Room>,
     private val authorities: kotlin.collections.Collection<GrantedAuthority>
 ) : UserDetails  {
@@ -75,6 +77,7 @@ class UserDetailsImpl(
                 user.name,
                 user.password,
                 user.isSuperuser,
+                user.lastSignIn,
                 user.rooms,
                 authorities
             )

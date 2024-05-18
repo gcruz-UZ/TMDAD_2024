@@ -27,6 +27,9 @@ data class Message
     //Id de usuario en BBDD que ha mandado el mensaje
     var userId: Int,
 
+    //Login de usuario en BBDD que ha mandado el mensaje
+    var userLogin: String,
+
     //Id de room en BBDD a la que pertenece el mensaje. Es null si el mensaje es de tipo AD
     var roomId: Int?
 )

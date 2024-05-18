@@ -1,5 +1,6 @@
 package com.TMDAD_2024.security.controllers
 
+import com.TMDAD_2024.message.MessageRepository
 import com.TMDAD_2024.room.Room
 import com.TMDAD_2024.security.jwt.JwtUtils
 import com.TMDAD_2024.security.services.UserDetailsImpl
@@ -17,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
+import java.sql.Timestamp
 import java.util.stream.Collectors
 
 @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], maxAge = 3600, allowCredentials = "true")
@@ -25,6 +27,7 @@ import java.util.stream.Collectors
 class AuthController(
     @Autowired private val authenticationManager: AuthenticationManager,
     @Autowired private val userRepository: UserRepository,
+    @Autowired private val messageRepository: MessageRepository,
     @Autowired private val encoder: PasswordEncoder,
     @Autowired private val jwtUtils: JwtUtils
 ) {
@@ -49,7 +52,7 @@ class AuthController(
     class MessageResponse(var message: String)
 
     class UserInfoResponse(var id: Int?, var login: String, var name: String, var isSuperUser: Boolean,
-        var rooms: List<Room>, var token: String)
+                           var lastSignIn: Timestamp?, var rooms: List<Room>, var token: String)
 
     @PostMapping("/signup")
     fun registerUser(@RequestBody signUpRequest: @Valid SignUpRequest): ResponseEntity<*> {
@@ -89,6 +92,19 @@ class AuthController(
 //                )
 //            )
 
+        //Añadimos a cada una de las rooms del user, el ultimo mensaje escrito en esa room
+        for(r in userDetails.rooms)
+        {
+            r.lastMessage = r.id?.let { messageRepository.findLastMessageByRoomId(it) }
+            if(r.lastMessage != null)
+                r.lastMessageTime = r.lastMessage!!.timeSent!!
+            else
+                r.lastMessageTime = r.createdAt
+        }
+
+        //Actualizamos ultima hora de signin del user
+        userRepository.updateLastSignInById(userDetails.id, Timestamp(System.currentTimeMillis()))
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .body(
                 UserInfoResponse(
@@ -96,6 +112,7 @@ class AuthController(
                     userDetails.username,
                     userDetails.name,
                     userDetails.isSuperuser,
+                    userDetails.lastSignIn,
                     userDetails.rooms,
                     jwtCookie.toString()
                 )

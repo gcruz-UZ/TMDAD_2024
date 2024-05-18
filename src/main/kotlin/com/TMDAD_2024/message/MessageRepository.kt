@@ -1,7 +1,7 @@
 package com.TMDAD_2024.message
 
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
-import java.sql.Timestamp
 
 interface MessageRepository : CrudRepository<Message, Int>
 {
@@ -10,6 +10,10 @@ interface MessageRepository : CrudRepository<Message, Int>
 
     //Para obtener los mensajes que son AD
     fun findByIsAd(isAd: Boolean) : List<Message>
+
+    //Busca el ultimo mensaje de una room
+    @Query("SELECT m FROM Message m WHERE m.roomId = :roomId ORDER BY m.timeSent DESC LIMIT 1")
+    fun findLastMessageByRoomId(roomId: Int): Message?
 
     //Para borrar mensajes de una room
     fun deleteByRoomId(roomId: Int)
