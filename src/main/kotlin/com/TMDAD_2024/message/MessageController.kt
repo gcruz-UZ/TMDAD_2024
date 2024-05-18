@@ -31,7 +31,10 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
 
     //create message
     @PostMapping("")
-    fun createMessage(@RequestBody msg: Message): ResponseEntity<Message> {
+    fun createMessage(@RequestBody msg: Message): ResponseEntity<*> {
+        if(msg.body.length > 500)
+            return ResponseEntity("Not allowed messages larger than 500 characters", HttpStatus.BAD_REQUEST)
+
         msg.timeSent = Timestamp(System.currentTimeMillis())
         val savedMsg = messageRepository.save(msg)
         return ResponseEntity(savedMsg, HttpStatus.CREATED)

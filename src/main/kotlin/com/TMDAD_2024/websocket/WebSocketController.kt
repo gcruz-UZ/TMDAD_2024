@@ -26,6 +26,12 @@ class WebSocketController(
     fun message(msg: Message) {
         println("Received message: $msg")
 
+        if(msg.body.length > 500)
+        {
+            println("Not allowed messages larger than 500 characters")
+            return
+        }
+
         val user = userRepository.findById(msg.userId).orElse(null)
         if(user == null)
         {
