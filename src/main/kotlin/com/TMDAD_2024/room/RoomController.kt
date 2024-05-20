@@ -250,6 +250,9 @@ class RoomController(
         //Borramos los mensajes de esta room
         messageRepository.deleteByRoomId(roomId)
 
+        //Borramos la room
+        roomRepository.deleteById(roomId)
+
         //Devolvemos ok
         return ResponseEntity("Room con ID ${roomId} borrada", HttpStatus.OK)
     }
