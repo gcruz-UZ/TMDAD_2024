@@ -84,6 +84,9 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         if(body.length > 500)
             return ResponseEntity("Not allowed messages larger than 500 characters", HttpStatus.BAD_REQUEST)
 
+        if((file.size / (1024*1024)) > 20)
+            return ResponseEntity("Not allowed files larger than 20MB", HttpStatus.BAD_REQUEST)
+
         val user = userRepository.findById(userId).orElse(null)
         if(user == null)
             return ResponseEntity("User with ID ${userId} not found", HttpStatus.BAD_REQUEST)
@@ -99,6 +102,9 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         val targetPath = targetLocation.resolve(msg.id.toString() +
                 SimpleDateFormat("yyyyMMddHHmmss").format(timeSent) +
                 "_" + file.originalFilename!!)
+
+        println("size")
+        println(file.size)
 
         file.inputStream.use { inputStream ->
             Files.copy(inputStream, targetPath)
