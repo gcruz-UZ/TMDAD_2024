@@ -10,7 +10,7 @@ data class Message
     //Clave primaria en BBDD
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int,
+    var id: Int?,
 
     //Cuerpo del mensaje
     var body: String,
@@ -33,3 +33,7 @@ data class Message
     //Id de room en BBDD a la que pertenece el mensaje. Es null si el mensaje es de tipo AD
     var roomId: Int?
 )
+{
+    constructor(body: String, timeSent: Timestamp?, filename: String, isAd: Boolean, userId: Int, userLogin: String, roomId: Int?)
+            : this (null, body, timeSent, filename, isAd, userId, userLogin, roomId)
+}

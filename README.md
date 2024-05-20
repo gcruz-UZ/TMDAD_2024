@@ -62,6 +62,7 @@ Crear tabla usuario-grupo:
 CREATE TABLE user_room (
 user_id INT,
 room_id INT,
+last_access timestamp,
 PRIMARY KEY(user_id, room_id),
 FOREIGN KEY(user_id) REFERENCES chat_user(id),
 FOREIGN KEY(room_id) REFERENCES room(id)

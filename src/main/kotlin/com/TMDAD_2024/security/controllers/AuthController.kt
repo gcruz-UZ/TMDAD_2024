@@ -4,8 +4,7 @@ import com.TMDAD_2024.message.MessageRepository
 import com.TMDAD_2024.room.Room
 import com.TMDAD_2024.security.jwt.JwtUtils
 import com.TMDAD_2024.security.services.UserDetailsImpl
-import com.TMDAD_2024.user.User
-import com.TMDAD_2024.user.UserRepository
+import com.TMDAD_2024.user.*
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -28,6 +27,7 @@ class AuthController(
     @Autowired private val authenticationManager: AuthenticationManager,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val messageRepository: MessageRepository,
+    @Autowired private val userRoomRepository: UserRoomRepository,
     @Autowired private val encoder: PasswordEncoder,
     @Autowired private val jwtUtils: JwtUtils
 ) {
@@ -100,6 +100,10 @@ class AuthController(
                 r.lastMessageTime = r.lastMessage!!.timeSent!!
             else
                 r.lastMessageTime = r.createdAt
+
+            //Traer el ultimpo tiempo de acceso a esta room por el user
+            val userRoom = userRoomRepository.findById(UserRoomKey(userDetails.id, r.id))
+            r.userLastAccess = userRoom.get().lastAccess
         }
 
         //Actualizamos ultima hora de signin del user

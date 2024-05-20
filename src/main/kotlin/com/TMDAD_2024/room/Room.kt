@@ -39,10 +39,13 @@ data class Room
 
     //Ultimo mensaje escrito en la room
     @Transient
-    var lastMessage: Message?
+    var lastMessage: Message?,
+
+    @Transient
+    var userLastAccess: Timestamp?
 )
 {
     //Constructor que recibe el nombre de la room
     constructor(name: String, createdAt: Timestamp, moderatorId: Int?, logins: List<String>)
-            : this (null, name, createdAt, moderatorId, logins = logins, lastMessage = null, lastMessageTime = createdAt)
+            : this (null, name, createdAt, moderatorId, logins = logins, lastMessage = null, lastMessageTime = createdAt, userLastAccess = null)
 }
