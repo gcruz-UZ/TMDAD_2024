@@ -43,7 +43,7 @@ class JwtUtils {
     fun generateJwtCookie(userPrincipal: UserDetailsImpl): ResponseCookie {
         val jwt = generateTokenFromUsername(userPrincipal.username)
         val cookie =
-            ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge((24 * 60 * 60).toLong()).httpOnly(true).build()
+            ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge((24 * 60 * 60).toLong()).httpOnly(true).sameSite("None").build()
         return cookie
     }
 
