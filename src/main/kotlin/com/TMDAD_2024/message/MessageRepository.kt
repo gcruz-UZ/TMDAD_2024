@@ -15,6 +15,9 @@ interface MessageRepository : CrudRepository<Message, Int>
     @Query("SELECT m FROM Message m WHERE m.roomId = :roomId ORDER BY m.timeSent DESC LIMIT 1")
     fun findLastMessageByRoomId(roomId: Int): Message?
 
+    @Query("SELECT m FROM Message m WHERE m.isAd = true ORDER BY m.timeSent DESC LIMIT 1")
+    fun findLastAdMessage(): Message?
+
     //Para borrar mensajes de una room
     fun deleteByRoomId(roomId: Int)
 }

@@ -40,6 +40,11 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
     fun getAdMessages(): List<Message> =
         messageRepository.findByIsAd(true).toList()
 
+    @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
+    @GetMapping("/ad/last")
+    fun getLastAdMessage(): Message? =
+        messageRepository.findLastAdMessage()
+
 
     //create message
     @PostMapping("")
