@@ -35,7 +35,7 @@ class Metrics {
 }
 
 @Component
-class ConsoleMessagePrinter : CommandLineRunner {
+class StatsSender : CommandLineRunner {
 
 	@Autowired
 	private lateinit var connections: AtomicInteger
