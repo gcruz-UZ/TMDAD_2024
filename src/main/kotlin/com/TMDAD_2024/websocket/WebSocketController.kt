@@ -1,5 +1,6 @@
 package com.TMDAD_2024.websocket
 
+import com.TMDAD_2024.Metrics
 import com.TMDAD_2024.message.Message
 import com.TMDAD_2024.message.MessageRepository
 import com.TMDAD_2024.room.RoomRepository
@@ -46,7 +47,8 @@ class WebSocketController(
         }
 
         //Añadimos el timestamp y lo almacenamos en BBDD
-        msg.timeSent = Timestamp(System.currentTimeMillis())
+        val time = Timestamp(System.currentTimeMillis())
+        msg.timeSent = time
         messageRepository.save(msg)
 
         //Si es AD, enviamos y ya
@@ -65,6 +67,10 @@ class WebSocketController(
             messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
         }
 
+        //Añadimos el mensaje a la estructura de metricas
+        Metrics.addMessage(Metrics.MetricsMessage(time, msg.body.length.toLong()))
+
+        //Lo enviamos al analisis de palabras
         rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
     }
 }

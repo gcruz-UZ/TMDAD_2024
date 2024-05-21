@@ -1,5 +1,6 @@
 package com.TMDAD_2024.message
 
+import com.TMDAD_2024.Metrics
 import com.TMDAD_2024.room.RoomRepository
 import com.TMDAD_2024.user.UserRepository
 import jakarta.validation.constraints.NotBlank
@@ -103,9 +104,6 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
                 SimpleDateFormat("yyyyMMddHHmmss").format(timeSent) +
                 "_" + file.originalFilename!!)
 
-        println("size")
-        println(file.size)
-
         file.inputStream.use { inputStream ->
             Files.copy(inputStream, targetPath)
         }
@@ -124,6 +122,9 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
             println("Sending to users: ${it.login}")
             messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
         }
+
+        //Añadimos el mensaje a la estructura de metricas
+        Metrics.addMessage(Metrics.MetricsMessage(timeSent, msg.body.length + file.size))
 
         //Enviamos el body del mensaje al analizador de palabras
         rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
