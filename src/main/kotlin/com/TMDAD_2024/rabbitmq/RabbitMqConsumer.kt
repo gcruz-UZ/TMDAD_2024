@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 
 @Service
 class RabbitMqConsumer(private val messagingTemplate: SimpMessagingTemplate) {
-    @RabbitListener(queues = ["SECOND_MESSAGE_QUEUE"])
+    @RabbitListener(queues = ["TRENDING_QUEUE"])
     fun consume(message: String) {
         println("Received message FROM TRENDINGS -> $message")
 
