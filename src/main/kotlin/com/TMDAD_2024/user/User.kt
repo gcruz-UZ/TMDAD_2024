@@ -40,6 +40,6 @@ data class User
     val rooms: List<Room> = listOf()
 )
 {
-    constructor(login: String, password: String)
-            : this (null, login, password, "empty", false, Timestamp(System.currentTimeMillis()))
+    constructor(login: String, password: String, name: String, isSuperuser: Boolean)
+            : this (null, login, password, name, isSuperuser, Timestamp(System.currentTimeMillis()))
 }

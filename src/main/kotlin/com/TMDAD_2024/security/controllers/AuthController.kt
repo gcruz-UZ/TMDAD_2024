@@ -39,6 +39,13 @@ class AuthController(
         @NotBlank
         @Size(min = 6, max = 40)
         lateinit var password: String
+
+        @NotBlank
+        @Size(min = 2, max = 40)
+        lateinit var name: String
+
+        @NotBlank
+        var isSuperuser: Boolean = false
     }
 
     class LoginRequest {
@@ -63,8 +70,11 @@ class AuthController(
         // Create new user's account
         val user = User(
             signUpRequest.username,
-            encoder.encode(signUpRequest.password)
+            encoder.encode(signUpRequest.password),
+            signUpRequest.name,
+            signUpRequest.isSuperuser
         )
+
         userRepository.save(user)
         return ResponseEntity.ok(MessageResponse("User registered successfully!"))
     }

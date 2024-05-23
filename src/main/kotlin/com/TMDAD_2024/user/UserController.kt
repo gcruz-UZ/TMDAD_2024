@@ -53,30 +53,6 @@ class UserController(@Autowired private val userRepository: UserRepository,
         }
     }
 
-    //create user
-    @PostMapping("")
-    fun createUser(@RequestBody user: User): ResponseEntity<User> {
-        if(user.lastSignIn == null)
-            user.lastSignIn = Timestamp(System.currentTimeMillis())
-
-        //Guardamos en BBDD y devolvemos
-        val savedUser = userRepository.save(user)
-        return ResponseEntity(savedUser, HttpStatus.CREATED)
-    }
-
-    //update user
-    @PutMapping("/{id}")
-    fun updateUserById(@PathVariable("id") userId: Int, @RequestBody user: User): ResponseEntity<User> {
-        //Buscamos el usuario. Si no existe, devolvemos 404
-        val existingUser = userRepository.findById(userId).orElse(null)
-            ?: return ResponseEntity(HttpStatus.NOT_FOUND)
-
-        //Modificamos el usuario, lo actualizamos en BBDD y devolvemos OK
-        val updatedUser = existingUser.copy(login = user.login, name = user.name, isSuperuser = user.isSuperuser)
-        userRepository.save(updatedUser)
-        return ResponseEntity(updatedUser, HttpStatus.OK)
-    }
-
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @PutMapping("/{userId}/room/{roomId}/lastAccess")
     fun updateUserLastAccessToRoom(@PathVariable("userId") userId: Int, @PathVariable("roomId") roomId: Int): ResponseEntity<User> {
@@ -104,12 +80,17 @@ class UserController(@Autowired private val userRepository: UserRepository,
     @DeleteMapping("/{id}")
     fun deletedUSerById(@PathVariable("id") userId: Int): ResponseEntity<User> {
         //Si no existe devolvemos 404
-        if (!userRepository.existsById(userId)){
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
+//        if (!userRepository.existsById(userId)){
+//            return ResponseEntity(HttpStatus.NOT_FOUND)
+//        }
+        println("BORRANDO USER")
+
+        //Comprobamos que no tenga rooms
+        println(userRoomRepository.existsByUserId(userId))
+        return ResponseEntity(HttpStatus.NO_CONTENT)
 
         //Lo eliminamos de BBDD y devolvemos OK
-        userRepository.deleteById(userId)
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+//        userRepository.deleteById(userId)
+//        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
