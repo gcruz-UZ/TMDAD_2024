@@ -30,6 +30,12 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
                         @Autowired private val rabbitTemplate: RabbitTemplate
 )
 {
+    //Para almacenar los ficheros
+    private val targetLocation: Path = Paths.get("uploaded-files")
+    init {
+        Files.createDirectories(targetLocation)
+    }
+
     //get all messages
     @GetMapping("")
     fun getAllMessages() : List<Message> =
@@ -53,20 +59,49 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         if(msg.body.length > 500)
             return ResponseEntity("Not allowed messages larger than 500 characters", HttpStatus.BAD_REQUEST)
 
-        msg.timeSent = Timestamp(System.currentTimeMillis())
-        val savedMsg = messageRepository.save(msg)
-        return ResponseEntity(savedMsg, HttpStatus.CREATED)
-    }
+        val user = userRepository.findById(msg.userId).orElse(null)
+        if(user == null)
+        {
+            return ResponseEntity("User with ID ${msg.userId} not found", HttpStatus.BAD_REQUEST)
+        }
 
-    private val targetLocation: Path = Paths.get("uploaded-files")
+        if(msg.isAd && !user.isSuperuser)
+        {
+            return ResponseEntity("AD only allowed for superusers", HttpStatus.BAD_REQUEST)
+        }
 
-    init {
-        Files.createDirectories(targetLocation)
+        //Añadimos el timestamp y lo almacenamos en BBDD
+        val time = Timestamp(System.currentTimeMillis())
+        msg.timeSent = time
+        messageRepository.save(msg)
+
+        //Si es AD, enviamos y ya
+        if(msg.isAd)
+        {
+            println("Sending AD to topic")
+            messagingTemplate.convertAndSend("/topic/ad", msg)
+            return ResponseEntity(msg, HttpStatus.CREATED)
+        }
+
+        //Ahora, obtenemos la room a la que pertenece el mensaje, y lo reenviamos a los users de dicha room
+        val roomId = msg.roomId ?: -1
+        val room = roomRepository.findById(roomId).orElse(null)
+        userRepository.findByRooms(listOf(room)).map {
+            println("Sending to users: ${it.login}")
+            messagingTemplate.convertAndSend("/topic/messages/${it.login}", msg)
+        }
+
+        //Añadimos el mensaje a la estructura de metricas
+        Metrics.addMessage(Metrics.MetricsMessage(time, msg.body.length.toLong()))
+
+        //Lo enviamos al analisis de palabras
+        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+
+        return ResponseEntity(msg, HttpStatus.CREATED)
     }
 
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @PostMapping("/file")
-//    fun uploadFile(@RequestParam("file") file: MultipartFile, @RequestParam("body") body: String): String {
     fun uploadFile(@RequestParam("file") file: MultipartFile,
                    @RequestParam("body") body: String,
                    @RequestParam("filename") filename: String,
@@ -74,13 +109,6 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
                    @RequestParam("userId") userId: Int,
                    @RequestParam("userLogin") userLogin: String,
                    @RequestParam("roomId") roomId: Int?): ResponseEntity<*> {
-//        println("** REQUEST **")
-//        println(body)
-//        println(filename)
-//        println(isAd)
-//        println(userId)
-//        println(userLogin)
-//        println(roomId)
 
         if(body.length > 500)
             return ResponseEntity("Not allowed messages larger than 500 characters", HttpStatus.BAD_REQUEST)
@@ -136,7 +164,6 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
     @GetMapping("/{id}/download")
     fun downloadFile(@PathVariable id: Int): ResponseEntity<*> {
-//        println("MEssage ID is: " + id)
         val msg = messageRepository.findById(id).orElse(null)
         if(msg == null)
             return ResponseEntity("Message with ID ${id} not found", HttpStatus.NOT_FOUND)
