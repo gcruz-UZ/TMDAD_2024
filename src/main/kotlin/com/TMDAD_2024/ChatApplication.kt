@@ -1,6 +1,5 @@
 package com.TMDAD_2024
 
-import com.TMDAD_2024.user.UserRoomRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -44,16 +43,11 @@ class StatsSender : CommandLineRunner {
 	@Autowired
 	private lateinit var messagingTemplate: SimpMessagingTemplate
 
-	@Autowired
-	private lateinit var r: UserRoomRepository
-
 	override fun run(vararg args: String?) {
 		val scheduler = Executors.newSingleThreadScheduledExecutor()
 		val intervalInSeconds = 5L
 
 		scheduler.scheduleAtFixedRate({
-			println("BORRANDO USER")
-			println(r.existsByUserId(20))
 			val stats = StringBuilder()
 			stats.append("Online users: ${connections.get()},")
 			val metrics = Metrics.getMessagesInTenLastMinutes()

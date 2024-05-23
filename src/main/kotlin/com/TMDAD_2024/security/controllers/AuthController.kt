@@ -89,19 +89,6 @@ class AuthController(
         val userDetails = authentication.principal as UserDetailsImpl
         val jwtCookie = jwtUtils.generateJwtCookie(userDetails)
 
-//        val roles = userDetails.authorities.stream()
-//            .map { item: GrantedAuthority -> item.authority }
-//            .collect(Collectors.toList())
-//
-//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-//            .body(
-//                UserInfoResponse(
-//                    userDetails.id,
-//                    userDetails.username,
-//                    roles
-//                )
-//            )
-
         //Añadimos a cada una de las rooms del user, el ultimo mensaje escrito en esa room
         for(r in userDetails.rooms)
         {

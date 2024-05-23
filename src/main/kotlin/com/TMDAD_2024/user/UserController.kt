@@ -78,19 +78,20 @@ class UserController(@Autowired private val userRepository: UserRepository,
 
     //delete user
     @DeleteMapping("/{id}")
-    fun deletedUSerById(@PathVariable("id") userId: Int): ResponseEntity<User> {
+    fun deletedUSerById(@PathVariable("id") userId: Int): ResponseEntity<*> {
         //Si no existe devolvemos 404
-//        if (!userRepository.existsById(userId)){
-//            return ResponseEntity(HttpStatus.NOT_FOUND)
-//        }
-        println("BORRANDO USER")
+        if (!userRepository.existsById(userId)){
+            return ResponseEntity("User with ID ${userId} not found", HttpStatus.NOT_FOUND)
+        }
 
         //Comprobamos que no tenga rooms
-        println(userRoomRepository.existsByUserId(userId))
-        return ResponseEntity(HttpStatus.NO_CONTENT)
+        if(userRoomRepository.existsByUserId(userId))
+        {
+            return ResponseEntity("User with ID ${userId} still has active rooms", HttpStatus.BAD_REQUEST)
+        }
 
         //Lo eliminamos de BBDD y devolvemos OK
-//        userRepository.deleteById(userId)
-//        return ResponseEntity(HttpStatus.NO_CONTENT)
+        userRepository.deleteById(userId)
+        return ResponseEntity("User with ID ${userId} deleted", HttpStatus.OK)
     }
 }
