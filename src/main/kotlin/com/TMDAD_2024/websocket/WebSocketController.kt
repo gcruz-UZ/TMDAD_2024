@@ -71,6 +71,7 @@ class WebSocketController(
         Metrics.addMessage(Metrics.MetricsMessage(time, msg.body.length.toLong()))
 
         //Lo enviamos al analisis de palabras
-        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+//        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+        rabbitTemplate.convertAndSend("MESSAGE_QUEUE", msg.body)
     }
 }

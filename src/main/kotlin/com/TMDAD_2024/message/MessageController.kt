@@ -111,7 +111,8 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         Metrics.addMessage(Metrics.MetricsMessage(time, msg.body.length.toLong()))
 
         //Lo enviamos al analisis de palabras
-        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+//        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+        rabbitTemplate.convertAndSend("MESSAGE_QUEUE", msg.body)
 
         return ResponseEntity(msg, HttpStatus.CREATED)
     }
@@ -171,7 +172,8 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
         Metrics.addMessage(Metrics.MetricsMessage(timeSent, msg.body.length + file.size))
 
         //Enviamos el body del mensaje al analizador de palabras
-        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+//        rabbitTemplate.convertAndSend("MESSAGE_EXCHANGE", "MESSAGE_ROUTING_KEY", msg.body)
+        rabbitTemplate.convertAndSend("MESSAGE_QUEUE", msg.body)
 
         println("File uploaded successfully: ${file.originalFilename}")
         return ResponseEntity(msg, HttpStatus.OK)
