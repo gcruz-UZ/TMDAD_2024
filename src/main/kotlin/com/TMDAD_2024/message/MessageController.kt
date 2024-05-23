@@ -1,6 +1,7 @@
 package com.TMDAD_2024.message
 
 import com.TMDAD_2024.Metrics
+import com.TMDAD_2024.room.Room
 import com.TMDAD_2024.room.RoomRepository
 import com.TMDAD_2024.user.UserRepository
 import jakarta.validation.constraints.NotBlank
@@ -40,6 +41,21 @@ class MessageController(@Autowired private val messageRepository: MessageReposit
     @GetMapping("")
     fun getAllMessages() : List<Message> =
         messageRepository.findAll().toList()
+
+    @GetMapping("/{id}")
+    fun getMessageById(@PathVariable("id") messageId: Int): ResponseEntity<Message>
+    {
+        //Obtenemos mensaje
+        val msg = messageRepository.findById(messageId).orElse(null)
+        if(msg != null)
+        {
+            return ResponseEntity(msg, HttpStatus.OK)
+        }
+        else
+        {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
 
     //Obtener mensajes que son AD
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true")
