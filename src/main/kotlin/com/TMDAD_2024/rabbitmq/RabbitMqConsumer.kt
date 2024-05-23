@@ -9,21 +9,7 @@ class RabbitMqConsumer(private val messagingTemplate: SimpMessagingTemplate) {
     @RabbitListener(queues = ["TRENDING_QUEUE"])
     fun consume(message: String) {
         println("Received message FROM TRENDINGS -> $message")
-
-//        val trends = message.split(",")
-//        val builder = StringBuilder()
-//
-//        builder.append("*** TRENDING TOPICS ***").append('\n')
-//        for(t in trends)
-//        {
-//            builder.append(t.trim()).append('\n')
-//        }
-//
-//        println("Parsed message:")
-//        println(builder.toString())
-//
-//        // Enviamos por websocket al topic de trendings
-//        messagingTemplate.convertAndSend("/topic/trendings", builder.toString())
+        // Enviamos por websocket al topic de trendings
         messagingTemplate.convertAndSend("/topic/trendings", message)
     }
 }
