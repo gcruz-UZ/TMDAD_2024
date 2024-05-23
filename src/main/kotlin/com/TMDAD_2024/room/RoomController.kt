@@ -49,12 +49,6 @@ class RoomController(
         return rooms
     }
 
-    @GetMapping("/publish")
-    fun sendMessage(@RequestParam("message") message: String): ResponseEntity<String> {
-        messagingTemplate.convertAndSend("/topic/stats", message)
-        return ResponseEntity.ok("Message sent to STATS ...")
-    }
-
     //get room by id
     @GetMapping("/{id}")
     fun getRoomById(@PathVariable("id") roomId: Int): ResponseEntity<Room> {
@@ -257,18 +251,6 @@ class RoomController(
         return ResponseEntity("Room con ID ${roomId} borrada", HttpStatus.OK)
     }
 
-    //update room
-    @PutMapping("/{id}")
-    fun updateRoomById(@PathVariable("id") roomId: Int, @RequestBody room: Room): ResponseEntity<Room> {
-        //Traemos la room. Si no existe, devolvemos 404
-        val existingRoom = roomRepository.findById(roomId).orElse(null) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
-
-        //Modificamos, guardamos en BBDD y devolvemos OK
-        val updatedRoom = existingRoom.copy(name = room.name)
-        roomRepository.save(updatedRoom)
-        return ResponseEntity(updatedRoom, HttpStatus.OK)
-    }
-
     //get messages by room id
     @CrossOrigin(origins = ["http://localhost:3000", "https://tmdad2024front-6457f4860338.herokuapp.com"], allowCredentials = "true",)
     @GetMapping("/{id}/messages")
@@ -312,15 +294,4 @@ class RoomController(
         //Devolvemos la dierencia
         return users.filter { obj1 -> usersInRoom.none { obj2 -> obj1.id == obj2.id } }
     }
-
-//    //delete user
-//    @DeleteMapping("/{id}")
-//    fun deletedUSerById(@PathVariable("id") userId: Int): ResponseEntity<User> {
-//        if (!userRepository.existsById(userId)){
-//            return ResponseEntity(HttpStatus.NOT_FOUND)
-//        }
-//
-//        userRepository.deleteById(userId)
-//        return ResponseEntity(HttpStatus.NO_CONTENT)
-//    }
 }
